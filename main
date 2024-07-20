@@ -1,0 +1,134 @@
+import java.util.Scanner;
+
+public class PenGame {
+
+    // Function to print the game rules
+    public static void printRules() {
+        System.out.println("Game Rules:");
+        System.out.println("1. You will choose any number of pens.");
+        System.out.println("2. You can choose whether you want to pick first or let the computer pick first.");
+        System.out.println("3. On each turn, you can pick 1, 2, or 3 pens.");
+        System.out.println("4. The number of pens left will be displayed after each turn.");
+        System.out.println("5. The player who picks the last pen wins.");
+    }
+
+    // Function to get a valid number of pens picked by the player
+    public static int getPlayerChoice(Scanner scanner) {
+        int choice;
+        while (true) {
+            System.out.print("Enter the number of pens you want to pick (1, 2, or 3): ");
+            if (scanner.hasNextInt()) {
+                choice = scanner.nextInt();
+                if (choice == 1 || choice == 2 || choice == 3) {
+                    return choice;
+                } else {
+                    System.out.println("Invalid input! Please enter 1, 2, or 3.");
+                }
+            } else {
+                System.out.println("Invalid input! Please enter 1, 2, or 3.");
+                scanner.next(); // Clear the invalid input
+            }
+        }
+    }
+
+    // Function to get a valid number of pens picked by the computer
+    public static int getComputerChoice(int pensLeft) {
+        int choice;
+        if (pensLeft > 4) {
+            // Pick a number that leaves the user with a number of pens that ensures computer wins
+            choice = (pensLeft % 4 == 0) ? 3 : (pensLeft % 4 - 1);
+            if (choice <= 0 || choice > 3) {
+                choice = 1; // Default to 1 if no strategic move is available
+            }
+        } else {
+            // If pensLeft <= 4, the computer ensures its win
+            choice = pensLeft;
+        }
+        System.out.println("Computer picks " + choice + " pens.");
+        return choice;
+    }
+
+    // Function to get the total number of pens from the user
+    public static int getTotalPens(Scanner scanner) {
+        int pens;
+        while (true) {
+            System.out.print("Enter the total number of pens: ");
+            if (scanner.hasNextInt()) {
+                pens = scanner.nextInt();
+                if (pens > 0) {
+                    return pens;
+                } else {
+                    System.out.println("Invalid input! Please enter a positive number.");
+                }
+            } else {
+                System.out.println("Invalid input! Please enter a positive number.");
+                scanner.next(); // Clear the invalid input
+            }
+        }
+    }
+
+    // Main game function
+    public static void playGame(Scanner scanner) {
+        int pens, playerChoice, computerChoice;
+        String userChoice;
+        boolean isUserTurn;
+
+        // User inputs the total number of pens
+        pens = getTotalPens(scanner);
+        System.out.println("The game will start with " + pens + " pens!");
+
+        System.out.print("Would you like to pick first or should the computer pick first? (type 'user' or 'computer'): ");
+        userChoice = scanner.next();
+
+        if (userChoice.equalsIgnoreCase("user")) {
+            isUserTurn = true;
+        } else if (userChoice.equalsIgnoreCase("computer")) {
+            isUserTurn = false;
+        } else {
+            System.out.println("Invalid choice! Defaulting to computer picking first.");
+            isUserTurn = false;
+        }
+
+        while (pens > 0) {
+            if (isUserTurn) {
+                playerChoice = getPlayerChoice(scanner);
+                pens -= playerChoice;
+                System.out.println("Pens left: " + pens);
+                if (pens <= 0) { 
+                    System.out.println("Computer wins!");
+                    break;
+                }
+            }
+            isUserTurn = !isUserTurn; // Switch turns
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        String option;
+
+        while (true) {
+            System.out.print("Type 'help' for rules, 'start' to play the game, or 'exit' to quit: ");
+            option = scanner.next();
+
+            if (option.equalsIgnoreCase("help")) {
+                printRules();
+            } else if (option.equalsIgnoreCase("start")) {
+                playGame(scanner);
+                System.out.print("Would you like to try again or exit? (type 'try again' or 'exit'): ");
+                option = scanner.next();
+                if (option.equalsIgnoreCase("exit")) {
+                    System.out.println("Exiting the game. Goodbye!");
+                    break;
+                }
+            } else if (option.equalsIgnoreCase("exit")) {
+                System.out.println("Exiting the game. Goodbye!");
+                break;
+            } else {
+                System.out.println("Invalid choice! Please type 'help', 'start', or 'exit'.");
+            }
+        }
+
+        scanner.close();
+    }
+}
